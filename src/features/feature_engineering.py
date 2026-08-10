@@ -1,14 +1,26 @@
+import sys
+import os
+
+sys.path.append(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__)
+        )
+    )
+)
+
+from config import TICKS_FILE,FEATURE_FILE
 import pandas as pd
 
 
 CSV_FILE = "ticks_data.csv"
-FEATURE_FILE = "feature_data.csv"
+FEATURE_FILE = "../../data/feature_data.csv"
 
 
 def load_data():
     """Load tick data from CSV."""
 
-    df = pd.read_csv(CSV_FILE)
+    df = pd.read_csv(TICKS_FILE)
 
     return df
 
@@ -35,6 +47,12 @@ def create_features(df):
     df["Digit Change"] = (
         df["Last digit"] - df["Previous Digit"]
     )
+
+    # Next digit
+    df["Next Digit"] = df["Last digit"].shift(-1)
+
+    # Next parity
+    df["Next Parity"] = df["Next Digit"] % 2
 
     # Rolling digit statistics
 
@@ -71,6 +89,7 @@ def create_features(df):
         df["Next Digit"] = df["Last digit"].shift(-1)
 
     return df
+
 
 
 def main():
